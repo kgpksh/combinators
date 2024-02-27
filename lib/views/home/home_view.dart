@@ -100,6 +100,15 @@ class HomeView extends StatelessWidget {
       body: BlocBuilder<CombinationItemDbBloc, CombinationItemDbState>(
         builder: (context, state) {
           if (state is CollectionGroupLoadedState) {
+            if (state.entities.isEmpty) {
+              return const Center(
+                child: Text(
+                  'No Group Exists. Add your group!',
+                  style: TextStyle(fontSize: 20, color: Colors.grey),
+                ),
+              );
+            }
+
             List<ItemBaseEntity> groups = state.entities;
             final Size displaySize = MediaQuery.of(context).size;
             final widthMargin = displaySize.width * 0.05;
@@ -111,9 +120,9 @@ class HomeView extends StatelessWidget {
                 margin: EdgeInsets.symmetric(horizontal: widthMargin),
                 child: CachedReorderableListView(
                   onReorder: (int oldIndex, int newIndex) {
-
-                    context.read<CombinationItemDbBloc>().add(
-                        CombinationGroupReorderEvent(
+                    context
+                        .read<CombinationItemDbBloc>()
+                        .add(CombinationGroupReorderEvent(
                           tableName: groupTable,
                           items: groups,
                           oldIndex: oldIndex,
