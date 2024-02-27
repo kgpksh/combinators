@@ -1,10 +1,6 @@
-import 'package:combinators/views/drawers/open_source_license_detail_view.dart';
-import 'package:combinators/views/drawers/open_source_license_list_view.dart';
-import 'package:combinators/views/home_view.dart';
+import 'package:combinators/views/home/home_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
-import '../../../oss_licenses.dart';
 
 @immutable
 abstract class RouteState {

@@ -1,15 +1,18 @@
 import 'package:combinators/services/bloc/account/account_bloc.dart';
 import 'package:combinators/services/bloc/app_info/app_info_bloc.dart';
+import 'package:combinators/services/bloc/crud/combination_item_crud_bloc.dart';
 import 'package:combinators/services/bloc/dark_mode/dark_mode_bloc.dart';
 import 'package:combinators/services/bloc/home_view/home_view_bloc.dart';
 import 'package:combinators/services/bloc/route_controller/route_bloc.dart';
 import 'package:combinators/services/bloc/route_controller/route_event.dart';
 import 'package:combinators/services/bloc/route_controller/route_state.dart';
+import 'package:combinators/services/crud/combination_item_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
   runApp(BlocProvider(
     create: (context) => DarkModeBloc(),
     child: BlocBuilder<DarkModeBloc, DarkModeState>(
@@ -38,7 +41,14 @@ void main() {
                 create: (context) => AppInfoBloc(),
               ),
             ],
-            child: const HomePage(),
+            child: RepositoryProvider(
+              create: (context) => CombinationItemRepository(),
+              child: BlocProvider(
+                create: (context) => CombinationItemDbBloc(
+                    context.read<CombinationItemRepository>(),),
+                child: const HomePage(),
+              ),
+            ),
           ),
         );
       },

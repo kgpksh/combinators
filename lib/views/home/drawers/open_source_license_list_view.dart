@@ -1,5 +1,5 @@
 import 'package:combinators/oss_licenses.dart';
-import 'package:combinators/views/drawers/open_source_license_detail_view.dart';
+import 'package:combinators/views/home/drawers/open_source_license_detail_view.dart';
 import 'package:flutter/material.dart';
 
 class OssLicensesListPage extends StatelessWidget {
