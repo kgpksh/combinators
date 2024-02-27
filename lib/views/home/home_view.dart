@@ -75,10 +75,10 @@ class HomeView extends StatelessWidget {
                     mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
                       const Text('Dark Mode'),
-                      BlocBuilder<DarkModeBloc, DarkModeState>(
+                      BlocBuilder<DarkModeBloc, bool>(
                         builder: (context, state) {
                           return Switch(
-                              value: state.isDarkMode,
+                              value: state,
                               onChanged: (value) {
                                 context.read<DarkModeBloc>().add(
                                     ChangeDarkModeEvent(isDarkMode: value));
