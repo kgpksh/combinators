@@ -40,19 +40,27 @@ class CombinationItemRepository {
     final List<ItemBaseEntity> slicedList;
     if (oldIndex < newIndex) {
       slicedList = items.getRange(oldIndex, newIndex + 1).toList();
+      final int biggestIndex = slicedList.last.orderKey;
+
       ItemBaseEntity moved = slicedList.removeAt(0);
       slicedList.add(moved);
+
       for (ItemBaseEntity item in slicedList) {
         item.orderKey -= 1;
       }
-      slicedList[newIndex - oldIndex].orderKey = newIndex + 1;
+
+      slicedList.last.orderKey = biggestIndex;
     } else {
       slicedList = items.getRange(newIndex, oldIndex + 1).toList();
+      final int smallestIndex = slicedList.first.orderKey;
+
       ItemBaseEntity moved = slicedList.removeAt(oldIndex - newIndex);
+
       for (ItemBaseEntity item in slicedList) {
         item.orderKey += 1;
       }
-      moved.orderKey = newIndex + 1;
+
+      moved.orderKey = smallestIndex;
       slicedList.insert(0, moved);
     }
 
