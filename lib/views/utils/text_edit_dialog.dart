@@ -5,19 +5,22 @@ typedef DialogOptionBuilder<T> = Map<String, T?> Function();
 Future<T?> showGenericDialog<T>({
   required BuildContext context,
   required String title,
+  required String defaultText,
+  required String hintText,
   required DialogOptionBuilder optionBuilder,
 }) {
   final options = optionBuilder();
-  final controller = TextEditingController();
+  final controller = TextEditingController(text: defaultText);
   return showDialog<T>(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text(title),
           content: TextFormField(
+            autofocus: true,
             controller: controller,
-            decoration: const InputDecoration(
-              hintText: "Enter Group Name",
+            decoration: InputDecoration(
+              hintText: hintText,
             ),
           ),
           actions: options.keys.map((optionTitle) {

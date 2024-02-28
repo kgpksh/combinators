@@ -16,3 +16,9 @@ class CollectionGroupLoadedState extends CombinationItemDbState {
 
   const CollectionGroupLoadedState({required this.entities});
 }
+
+class CollectionGroupNameEditedState extends CombinationItemDbState {
+  const CollectionGroupNameEditedState({
+    required updatedGroupList,
+  });
+}

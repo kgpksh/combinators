@@ -1,0 +1,1 @@
+enum CategoryMenuActions { editGroupName, deleteGroup }

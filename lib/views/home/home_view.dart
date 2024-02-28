@@ -4,9 +4,9 @@ import 'package:combinators/services/bloc/dark_mode/dark_mode_bloc.dart';
 import 'package:combinators/services/bloc/reorder_item_animation/reorder_item_animation_bloc.dart';
 import 'package:combinators/services/crud/combination_item_service.dart';
 import 'package:combinators/services/crud/entity/item_base_entity.dart';
+import 'package:combinators/views/combine/combinator.dart';
 import 'package:combinators/views/home/cached_reorderable_list_view.dart';
 import 'package:combinators/views/home/drawers/open_source_license_list_view.dart';
-import 'package:combinators/views/combine/combination.dart';
 import 'package:combinators/views/utils/text_edit_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -146,7 +146,14 @@ class HomeView extends StatelessWidget {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => CombinationPage()));
+                                      builder: (_) => RepositoryProvider.value(
+                                            value: BlocProvider.of<
+                                                CombinationItemDbBloc>(context),
+                                            child: CombinationPage(
+                                              groupName: item.name,
+                                              groupId: item.id,
+                                            ),
+                                          )));
                             });
                           },
                           child: Row(
@@ -212,6 +219,8 @@ class HomeView extends StatelessWidget {
                 final groupName = await showGenericDialog(
                   context: context,
                   title: 'Add group',
+                  defaultText: '',
+                  hintText: 'Enter Group Name',
                   optionBuilder: () => {
                     'Cancel': null,
                     'Create': true,

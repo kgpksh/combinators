@@ -23,6 +23,11 @@ class CombinationItemRepository {
     return db.delete(groupTable, where: 'id = ?', whereArgs: [id]);
   }
 
+  Future<List<DatabaseGroup>> updateGroupName({required int id, required newName}) async {
+    await _updateEntityName(id: id,newName: newName);
+    return await getAllGroups();
+  }
+
   Future<List<ItemBaseEntity>> updateEntityKey({
     required String tableName,
     required List<ItemBaseEntity> items,
@@ -68,11 +73,11 @@ class CombinationItemRepository {
     }
   }
 
-  Future<int> updateEntityName({required String name}) async {
+  Future<int> _updateEntityName({required int id, required String newName}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
-    return db.update(groupTable, {nameColumn: name});
+    return db.update(groupTable, {nameColumn: newName}, where: 'id = ?', whereArgs: [id]);
   }
 
   Future<List<DatabaseGroup>> createGroup({required String name}) async {

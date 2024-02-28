@@ -23,3 +23,9 @@ class CombinationGroupReorderEvent extends CombinationItemDbEvent {
     required this.newIndex,
   });
 }
+
+class CombinationGroupRenameEvent extends CombinationItemDbEvent{
+  final int id;
+  final String newGroupName;
+  CombinationGroupRenameEvent({required this.id, required this.newGroupName});
+}

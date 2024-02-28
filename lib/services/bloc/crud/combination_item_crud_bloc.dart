@@ -14,6 +14,7 @@ class CombinationItemDbBloc
 
   CombinationItemDbBloc(this._combinationItemRepository)
       : super(const CombinationItemDbInitialState()) {
+
     on<CombinationGroupLoadEvent>((event, emit) async {
       emit(const CombinationItemDbInitialState());
       List<DatabaseGroup> groups =
@@ -37,6 +38,14 @@ class CombinationItemDbBloc
               newIndex: event.newIndex);
 
       emit(CollectionGroupLoadedState(entities: updatedEntities));
+    });
+
+    on<CombinationGroupRenameEvent>((event, emit) async {
+      List<DatabaseGroup> updatedGroupList = await _combinationItemRepository
+          .updateGroupName(id: event.id, newName: event.newGroupName);
+      // emit(CollectionGroupNameEditedState(
+      //   updatedGroupList: updatedGroupList,
+      // ));
     });
   }
 }
