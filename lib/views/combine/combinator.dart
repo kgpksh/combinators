@@ -1,5 +1,6 @@
 import 'package:combinators/enums/menu_action.dart';
 import 'package:combinators/services/bloc/crud/combination_item_crud_bloc.dart';
+import 'package:combinators/views/utils/confirm_dialog.dart';
 import 'package:combinators/views/utils/text_edit_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,7 +8,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class CombinationPage extends StatefulWidget {
   final String groupName;
   final int groupId;
-  const CombinationPage({super.key, required this.groupName, required this.groupId});
+
+  const CombinationPage(
+      {super.key, required this.groupName, required this.groupId});
 
   @override
   State<CombinationPage> createState() => _CombinationPageState();
@@ -38,11 +41,10 @@ class _CombinationPageState extends State<CombinationPage> {
     groupId = widget.groupId;
   }
 
-
   @override
   void dispose() {
     super.dispose();
-    if(initialGroupName != groupName) {
+    if (initialGroupName != groupName) {
       bloc.add(CombinationGroupLoadEvent());
     }
   }
@@ -76,11 +78,29 @@ class _CombinationPageState extends State<CombinationPage> {
                     context
                         .read<CombinationItemDbBloc>()
                         .add(CombinationGroupRenameEvent(
-                      id: groupId,
-                      newGroupName: newGroupName,
-                    ));
+                          id: groupId,
+                          newGroupName: newGroupName,
+                        ));
                   }
                 case CategoryMenuActions.deleteGroup:
+                  final bool? deleteCommand = await showConfirmDialog(
+                    context: context,
+                    title: 'Confirm',
+                    content: 'Will you really delete this group?',
+                    optionBuilder: () => {
+                      'Cancel': false,
+                      'Delete': true,
+                    },
+                  );
+
+                  if (!context.mounted) return;
+                  if (deleteCommand ?? false) {
+                    context
+                        .read<CombinationItemDbBloc>()
+                        .add(CombinationGroupDeleteEvent(groupId: groupId));
+
+                    Navigator.of(context).pop();
+                  }
               }
             },
             itemBuilder: (context) {
@@ -116,7 +136,7 @@ class _CombinationPageState extends State<CombinationPage> {
                           Theme.of(context).primaryColor,
                         ),
                         shape:
-                        MaterialStateProperty.all<RoundedRectangleBorder>(
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),
                           ),

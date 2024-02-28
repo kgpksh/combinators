@@ -29,3 +29,9 @@ class CombinationGroupRenameEvent extends CombinationItemDbEvent{
   final String newGroupName;
   CombinationGroupRenameEvent({required this.id, required this.newGroupName});
 }
+
+class CombinationGroupDeleteEvent extends CombinationItemDbEvent{
+  final int groupId;
+
+  CombinationGroupDeleteEvent({required this.groupId});
+}
