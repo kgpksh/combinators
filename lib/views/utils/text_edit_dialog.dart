@@ -22,6 +22,7 @@ Future<T?> showGenericDialog<T>({
             decoration: InputDecoration(
               hintText: hintText,
             ),
+            maxLength: 15,
           ),
           actions: options.keys.map((optionTitle) {
             final T value = options[optionTitle];
