@@ -5,15 +5,16 @@ typedef ListItemWidgetBuilder<ItemBaseEntity> = Widget Function(
     BuildContext context, ItemBaseEntity item);
 
 class CachedReorderableListView<ItemBaseEntity> extends StatefulWidget {
-  const CachedReorderableListView(
-      {required this.list,
-      required this.itemBuilder,
-      required this.onReorder,
-      super.key});
+  const CachedReorderableListView({required this.list,
+    required this.itemBuilder,
+    required this.onReorder,
+    required this.scrollDirection,
+    super.key});
 
   final List<ItemBaseEntity> list;
   final ListItemWidgetBuilder<ItemBaseEntity> itemBuilder;
   final ReorderCallback onReorder;
+  final Axis scrollDirection;
 
   @override
   CachedReorderableListViewState<ItemBaseEntity> createState() =>
@@ -48,11 +49,13 @@ class CachedReorderableListViewState<ItemBaseEntity>
   @override
   Widget build(BuildContext context) {
     return ReorderableListView.builder(
-      // proxyDecorator: _proxyDecorator,
+      scrollDirection: widget.scrollDirection,
       proxyDecorator: (Widget child, int index, _) {
         return Container(
           // margin: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * 0.02),
-          color: Theme.of(context).secondaryHeaderColor,
+          color: Theme
+              .of(context)
+              .secondaryHeaderColor,
           child: child,
         );
       },

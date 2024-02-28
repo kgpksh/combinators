@@ -5,7 +5,7 @@ import 'package:combinators/services/bloc/reorder_item_animation/reorder_item_an
 import 'package:combinators/services/crud/combination_item_service.dart';
 import 'package:combinators/services/crud/entity/item_base_entity.dart';
 import 'package:combinators/views/combine/combinator.dart';
-import 'package:combinators/views/home/cached_reorderable_list_view.dart';
+import 'package:combinators/views/utils/cached_reorderable_list_view.dart';
 import 'package:combinators/views/home/drawers/open_source_license_list_view.dart';
 import 'package:combinators/views/utils/text_edit_dialog.dart';
 import 'package:flutter/material.dart';
@@ -119,6 +119,7 @@ class HomeView extends StatelessWidget {
               child: Container(
                 margin: EdgeInsets.symmetric(horizontal: widthMargin),
                 child: CachedReorderableListView(
+                  scrollDirection: Axis.vertical,
                   onReorder: (int oldIndex, int newIndex) {
                     context
                         .read<CombinationItemDbBloc>()
