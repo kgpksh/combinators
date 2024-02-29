@@ -7,8 +7,6 @@ abstract class CombinationState {
   const CombinationState({this.isLoading = false});
 }
 
-class CombinationInitial extends CombinationState {}
-
 class CombinationDbInitialState extends CombinationState {
   const CombinationDbInitialState({super.isLoading = true});
 }

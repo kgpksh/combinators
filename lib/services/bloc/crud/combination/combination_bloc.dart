@@ -12,7 +12,7 @@ class CombinationBloc extends Bloc<CombinationEvent, CombinationState> {
   final CombinationItemRepository _combinationItemRepository;
 
   CombinationBloc(this._combinationItemRepository)
-      : super(CombinationInitial()) {
+      : super(const CombinationDbInitialState()) {
     on<CombinationEvent>((event, emit) {});
 
     on<CombinationCategoryCreateEvent>(
@@ -29,7 +29,7 @@ class CombinationBloc extends Bloc<CombinationEvent, CombinationState> {
 
     on<CombinationPageLoadEvent>(
       (event, emit) async {
-        emit(CombinationInitial());
+        emit(const CombinationDbInitialState());
         List<DatabaseCategory> combinations = await _combinationItemRepository
             .getCombinationDatas(groupId: event.groupId);
 

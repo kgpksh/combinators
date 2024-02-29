@@ -47,6 +47,9 @@ class _CombinationPageState extends State<CombinationPage> {
       body: BlocBuilder<CombinationBloc, CombinationState>(
         buildWhen: (context, state) => state is CombinationPageLoadedState,
         builder: (context, state) {
+          if(state is CombinationDbInitialState) {
+            return const LoadingView();
+          }
           if (state is CombinationPageLoadedState) {
             combinationDatas = List.of(state.combinationData);
             return Padding(
