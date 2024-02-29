@@ -1,28 +1,24 @@
 import 'package:combinators/enums/menu_action.dart';
-import 'package:combinators/services/bloc/crud/combination_item_crud_bloc.dart';
+import 'package:combinators/services/bloc/crud/group/combination_group_bloc.dart';
 import 'package:combinators/views/utils/confirm_dialog.dart';
 import 'package:combinators/views/utils/text_edit_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class CombinationAppBar extends StatefulWidget implements PreferredSizeWidget{
-  const CombinationAppBar({super.key, required this.groupName, required this.groupId, required this.context});
-  final BuildContext context;
+class CombinationAppBar extends AppBar{
+  CombinationAppBar({super.key, required this.groupName, required this.groupId});
   final String groupName;
   final int groupId;
 
   @override
   State<CombinationAppBar> createState() => _CombinationAppBarState();
-
-  @override
-  Size get preferredSize => Size.fromHeight(MediaQuery.of(context).size.height * 0.08);
 }
 
 class _CombinationAppBarState extends State<CombinationAppBar> {
   late final String initialGroupName;
   late final int groupId;
   late String groupName;
-  late CombinationItemDbBloc bloc;
+  late CombinationGroupDbBloc bloc;
 
   @override
   void initState() {
@@ -35,7 +31,7 @@ class _CombinationAppBarState extends State<CombinationAppBar> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    bloc = context.read<CombinationItemDbBloc>();
+    bloc = context.read<CombinationGroupDbBloc>();
   }
 
   @override
@@ -56,22 +52,22 @@ class _CombinationAppBarState extends State<CombinationAppBar> {
               case CategoryMenuActions.editGroupName:
                 final newGroupName = await showGenericDialog(
                   context: context,
-                  title: 'Edit group name',
+                  title: 'Rename Group name',
                   defaultText: groupName,
-                  hintText: 'Enter Group Name',
+                  hintText: 'Type Group name',
                   optionBuilder: () => {
                     'Cancel': null,
-                    'Edit': true,
+                    'Rename': true,
                   },
                 );
 
                 if (!context.mounted) return;
-                if (newGroupName != null) {
+                if (newGroupName != null && newGroupName != '' && newGroupName != groupName) {
                   setState(() {
                     groupName = newGroupName;
                   });
                   context
-                      .read<CombinationItemDbBloc>()
+                      .read<CombinationGroupDbBloc>()
                       .add(CombinationGroupRenameEvent(
                     id: groupId,
                     newGroupName: newGroupName,
@@ -91,7 +87,7 @@ class _CombinationAppBarState extends State<CombinationAppBar> {
                 if (!context.mounted) return;
                 if (deleteCommand ?? false) {
                   context
-                      .read<CombinationItemDbBloc>()
+                      .read<CombinationGroupDbBloc>()
                       .add(CombinationGroupDeleteEvent(groupId: groupId));
 
                   Navigator.of(context).pop();
@@ -102,7 +98,7 @@ class _CombinationAppBarState extends State<CombinationAppBar> {
             return [
               const PopupMenuItem<CategoryMenuActions>(
                 value: CategoryMenuActions.editGroupName,
-                child: Text('Edit GroupName'),
+                child: Text('Rename Group'),
               ),
               const PopupMenuItem<CategoryMenuActions>(
                 value: CategoryMenuActions.deleteGroup,

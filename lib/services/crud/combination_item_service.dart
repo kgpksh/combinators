@@ -17,75 +17,163 @@ class CombinationItemRepository {
   factory CombinationItemRepository() => _combinationItemRepository;
   Database? _db;
 
+  Future<List<DatabaseCategory>> deleteItem({
+    required List<DatabaseCategory> categoryList,
+    required int categoryId,
+    required int itemIndex,
+  }) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    int updateCategoryIndex =
+        categoryList.indexWhere((element) => element.id == categoryId);
+    int itemId = categoryList[updateCategoryIndex].items[itemIndex].id;
+    await db.delete(itemTable, where: 'id = ?', whereArgs: [itemId]);
+
+    categoryList[updateCategoryIndex].items.removeAt(itemIndex);
+    return categoryList;
+  }
+
+  Future<List<DatabaseCategory>> deleteCategory({
+    required List<DatabaseCategory> categoryList,
+    required int id,
+  }) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    await db.delete(categoryTable, where: 'id = ?', whereArgs: [id]);
+
+    categoryList.removeWhere((element) => element.id == id);
+    return categoryList;
+  }
+
   Future<int> deleteGroup({required int id}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     return db.delete(groupTable, where: 'id = ?', whereArgs: [id]);
   }
 
-  Future<List<DatabaseGroup>> updateGroupName({required int id, required newName}) async {
-    await _updateEntityName(id: id,newName: newName);
+  Future<List<DatabaseCategory>> updateItemName({
+    required List<DatabaseCategory> categoryList,
+    required int categoryId,
+    required int itemIndex,
+    required newName,
+  }) async {
+    int updateCategoryIndex =
+        categoryList.indexWhere((element) => element.id == categoryId);
+    DatabaseItem item = categoryList[updateCategoryIndex].items[itemIndex];
+
+    await _updateEntityName(
+        id: item.id, tableName: itemTable, newName: newName);
+
+    categoryList[updateCategoryIndex].items[itemIndex].name = newName;
+    return categoryList;
+  }
+
+  Future<List<DatabaseCategory>> updateCategoryName({
+    required List<DatabaseCategory> categoryList,
+    required int id,
+    required newName,
+  }) async {
+    await _updateEntityName(id: id, tableName: categoryTable, newName: newName);
+    int updateIndex = categoryList.indexWhere((element) => element.id == id);
+    categoryList[updateIndex].name = newName;
+    return categoryList;
+  }
+
+  Future<List<DatabaseGroup>> updateGroupName(
+      {required int id, required newName}) async {
+    await _updateEntityName(id: id, tableName: groupTable, newName: newName);
     return await getAllGroups();
   }
 
-  Future<List<ItemBaseEntity>> updateEntityKey({
-    required String tableName,
-    required List<ItemBaseEntity> items,
+  Future<List<DatabaseCategory>> updateCategoryKey({
+    required List<DatabaseCategory> combinationList,
     required int oldIndex,
     required int newIndex,
+    required int groupId,
+  }) async {
+    DatabaseCategory item = combinationList.removeAt(oldIndex);
+    combinationList.insert(newIndex, item);
+
+    await updateEntityKey(
+      tableName: categoryTable,
+      items: combinationList,
+    );
+
+    return combinationList;
+  }
+
+  Future<List<DatabaseGroup>> updateGroupKey({
+    required List<DatabaseGroup> groupList,
+    required int oldIndex,
+    required int newIndex,
+  }) async {
+    DatabaseGroup item = groupList.removeAt(oldIndex);
+    groupList.insert(newIndex, item);
+
+    await updateEntityKey(
+      tableName: groupTable,
+      items: groupList,
+    );
+
+    return groupList;
+  }
+
+  Future<void> updateEntityKey({
+    required String tableName,
+    required List<ItemBaseEntity> items,
+    // required int oldIndex,
+    // required int newIndex,
   }) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
-    final List<ItemBaseEntity> slicedList;
-    if (oldIndex < newIndex) {
-      slicedList = items.getRange(oldIndex, newIndex + 1).toList();
-      final int biggestIndex = slicedList.last.orderKey;
-
-      ItemBaseEntity moved = slicedList.removeAt(0);
-      slicedList.add(moved);
-
-      for (ItemBaseEntity item in slicedList) {
-        item.orderKey -= 1;
-      }
-
-      slicedList.last.orderKey = biggestIndex;
-    } else {
-      slicedList = items.getRange(newIndex, oldIndex + 1).toList();
-      final int smallestIndex = slicedList.first.orderKey;
-
-      ItemBaseEntity moved = slicedList.removeAt(oldIndex - newIndex);
-
-      for (ItemBaseEntity item in slicedList) {
-        item.orderKey += 1;
-      }
-
-      moved.orderKey = smallestIndex;
-      slicedList.insert(0, moved);
-    }
-
     final batch = db.batch();
-    for (final ItemBaseEntity item in slicedList) {
-      batch.update(groupTable, {orderKeyColumn: item.orderKey},
-          where: 'id = ?', whereArgs: [item.id]);
+    for (int index = 0; index < items.length; index++) {
+      batch.update(tableName, {orderKeyColumn: index},
+          where: 'id = ?', whereArgs: [items[index].id]);
     }
 
     await batch.commit(continueOnError: false);
-
-    if (tableName == groupTable) {
-      return getAllGroups();
-    } else if (tableName == categoryTable) {
-      return getAllCategories();
-    } else {
-      return getAllItems();
-    }
   }
 
-  Future<int> _updateEntityName({required int id, required String newName}) async {
+  Future<int> _updateEntityName(
+      {required int id,
+      required String tableName,
+      required String newName}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
-    return db.update(groupTable, {nameColumn: newName}, where: 'id = ?', whereArgs: [id]);
+    return db.update(tableName, {nameColumn: newName},
+        where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<void> createItem(
+      {required int categoryId, required String name}) async {
+    final latestOrderKey = await getLatestOrderKey(tableName: itemTable);
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    await db.insert(itemTable, {
+      itemCategoryIdColumn: categoryId,
+      createdDateColumn: DateFormat("yyyy - MM - dd").format(DateTime.now()),
+      orderKeyColumn: latestOrderKey + 1,
+      nameColumn: name,
+    });
+  }
+
+  Future<void> createCategory(
+      {required int groupId, required String name}) async {
+    final latestOrderKey = await getLatestOrderKey(tableName: categoryTable);
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    await db.insert(categoryTable, {
+      categoryGroupIdColumn: groupId,
+      createdDateColumn: DateFormat("yyyy - MM - dd").format(DateTime.now()),
+      orderKeyColumn: latestOrderKey + 1,
+      nameColumn: name,
+    });
   }
 
   Future<List<DatabaseGroup>> createGroup({required String name}) async {
@@ -128,6 +216,47 @@ class CombinationItemRepository {
       orderBy: '$orderKeyColumn ASC',
     );
     return groups.map((group) => DatabaseGroup.fromRow(group)).toList();
+  }
+
+  Future<List<DatabaseCategory>> getCombinationDatas({
+    required int groupId,
+  }) async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+
+    return await db.transaction((txn) async {
+      // 먼저 해당 groupId에 맞는 category들을 쿼리합니다.
+      final List<Map<String, dynamic>> categoryList = await txn.query(
+        categoryTable,
+        where: 'group_id = ?',
+        whereArgs: [groupId],
+        orderBy: 'order_key ASC',
+      );
+
+      List<Map<String, dynamic>> categories = [];
+
+      // 각 category에 대해 item들을 쿼리하고, 결과를 합치는 작업을 수행합니다.
+      for (var category in categoryList) {
+        final List<Map<String, dynamic>> itemList = await txn.query(
+          itemTable,
+          where: 'category_id = ?',
+          whereArgs: [category['id']],
+          orderBy: 'order_key ASC',
+        );
+
+        final List<DatabaseItem> items =
+            itemList.map((item) => DatabaseItem.fromRow(item)).toList();
+
+        // category에 속한 item들을 'items'라는 key로 추가합니다.
+        category = Map.of(category);
+        category['items'] = items;
+        categories.add(category);
+      }
+
+      return categories
+          .map((category) => DatabaseCategory.fromRow(category))
+          .toList();
+    });
   }
 
   Future<List<DatabaseCategory>> getAllCategories() async {
@@ -227,12 +356,6 @@ const groupTable = 'group';
 const categoryTable = 'category';
 const itemTable = 'item';
 
-const Map<String, dynamic> tableMap = {
-  groupTable: DatabaseGroup,
-  categoryTable: DatabaseCategory,
-  itemTable: DatabaseItem
-};
-
 const createGroupTable = '''
     CREATE TABLE IF NOT EXISTS "$groupTable" (
       "id" INTEGER NOT NULL,
@@ -253,7 +376,8 @@ const createCategoryTable = '''
       PRIMARY KEY("id" AUTOINCREMENT));
   ''';
 
-const createCategoryIndex = 'CREATE INDEX IF NOT EXISTS idx_category_group_id ON "$categoryTable" (group_id);';
+const createCategoryIndex =
+    'CREATE INDEX IF NOT EXISTS idx_category_group_id ON "$categoryTable" (group_id);';
 
 const createItemTable = '''
     CREATE TABLE IF NOT EXISTS "$itemTable" (
@@ -266,4 +390,5 @@ const createItemTable = '''
       PRIMARY KEY("id" AUTOINCREMENT));
   ''';
 
-const createItemIndex = 'CREATE INDEX IF NOT EXISTS idx_item_category_id ON "$itemTable" (category_id);';
+const createItemIndex =
+    'CREATE INDEX IF NOT EXISTS idx_item_category_id ON "$itemTable" (category_id);';

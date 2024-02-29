@@ -1,12 +1,13 @@
 import 'package:combinators/services/bloc/app_info/app_info_bloc.dart';
-import 'package:combinators/services/bloc/crud/combination_item_crud_bloc.dart';
+import 'package:combinators/services/bloc/crud/combination/combination_bloc.dart';
+import 'package:combinators/services/bloc/crud/group/combination_group_bloc.dart';
 import 'package:combinators/services/bloc/dark_mode/dark_mode_bloc.dart';
-import 'package:combinators/services/bloc/reorder_item_animation/reorder_item_animation_bloc.dart';
-import 'package:combinators/services/crud/combination_item_service.dart';
-import 'package:combinators/services/crud/entity/item_base_entity.dart';
+import 'package:combinators/services/crud/entity/group_entity.dart';
 import 'package:combinators/views/combine/combinator.dart';
 import 'package:combinators/views/utils/cached_reorderable_list_view.dart';
 import 'package:combinators/views/home/drawers/open_source_license_list_view.dart';
+import 'package:combinators/views/utils/display_size.dart';
+import 'package:combinators/views/utils/loading_view.dart';
 import 'package:combinators/views/utils/text_edit_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,8 +19,11 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double displayHeight = DisplaySize.instance.displayHeight;
+    double displayWidth = DisplaySize.instance.displayWidth;
     context.read<AppInfoBloc>().add(CallAppInfoEvent());
-    context.read<CombinationItemDbBloc>().add(CombinationGroupLoadEvent());
+    context.read<CombinationGroupDbBloc>().add(CombinationGroupLoadEvent());
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('All groups'),
@@ -97,7 +101,7 @@ class HomeView extends StatelessWidget {
           );
         },
       ),
-      body: BlocBuilder<CombinationItemDbBloc, CombinationItemDbState>(
+      body: BlocBuilder<CombinationGroupDbBloc, CombinationGroupDbState>(
         builder: (context, state) {
           if (state is CollectionGroupLoadedState) {
             if (state.entities.isEmpty) {
@@ -109,52 +113,55 @@ class HomeView extends StatelessWidget {
               );
             }
 
-            List<ItemBaseEntity> groups = state.entities;
-            final Size displaySize = MediaQuery.of(context).size;
-            final widthMargin = displaySize.width * 0.05;
-            final itemHeight = displaySize.height * 0.1;
+            List<DatabaseGroup> groups = state.entities;
+            final widthMargin = displayWidth * 0.05;
+            final itemHeight = displayHeight * 0.1;
 
-            return BlocProvider<ReorderItemAnimationBloc>(
-              create: (context) => ReorderItemAnimationBloc(),
-              child: Container(
-                margin: EdgeInsets.symmetric(horizontal: widthMargin),
-                child: CachedReorderableListView(
-                  scrollDirection: Axis.vertical,
-                  onReorder: (int oldIndex, int newIndex) {
-                    context
-                        .read<CombinationItemDbBloc>()
-                        .add(CombinationGroupReorderEvent(
-                          tableName: groupTable,
-                          items: groups,
-                          oldIndex: oldIndex,
-                          newIndex: newIndex,
-                        ));
-                  },
-                  list: groups,
-                  itemBuilder: (context, item) => Container(
+            return Container(
+              margin: EdgeInsets.symmetric(horizontal: widthMargin),
+              child: CachedReorderableListView(
+                scrollDirection: Axis.vertical,
+                onReorder: (int oldIndex, int newIndex) {
+                  context
+                      .read<CombinationGroupDbBloc>()
+                      .add(CombinationGroupReorderEvent(
+                        items: groups,
+                        oldIndex: oldIndex,
+                        newIndex: newIndex,
+                      ));
+                },
+                list: groups,
+                itemBuilder: (context, item) => SizedBox(
+                  key: Key('${item.orderKey}'),
+                  child: Container(
                     decoration: const BoxDecoration(
                         border: Border(
-                            bottom:
-                                BorderSide(color: Colors.grey, width: 0.8))),
-                    key: Key('${item.orderKey}'),
+                            bottom: BorderSide(color: Colors.grey, width: 0.8))),
                     height: itemHeight,
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
                           onTap: () {
-                            Future.delayed(const Duration(milliseconds: 200),
-                                () {
+                            Future.delayed(const Duration(milliseconds: 200), () {
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => RepositoryProvider.value(
-                                            value: BlocProvider.of<
-                                                CombinationItemDbBloc>(context),
-                                            child: CombinationPage(
-                                              groupName: item.name,
-                                              groupId: item.id,
-                                            ),
-                                          )));
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => MultiBlocProvider(
+                                    providers: [
+                                      BlocProvider<CombinationGroupDbBloc>.value(
+                                        value: BlocProvider.of<CombinationGroupDbBloc>(context),
+                                      ),
+                                      BlocProvider<CombinationBloc>.value(
+                                        value: BlocProvider.of<CombinationBloc>(context),
+                                      ),
+                                    ],
+                                    child: CombinationPage(
+                                      groupName: item.name,
+                                      groupId: item.id,
+                                    ),
+                                  ),
+                                ),
+                              );
                             });
                           },
                           child: Row(
@@ -170,7 +177,7 @@ class HomeView extends StatelessWidget {
                                     child: Text(
                                       item.name,
                                       style: TextStyle(
-                                          fontSize: displaySize.height * 0.04),
+                                          fontSize: displayHeight * 0.04),
                                     ),
                                   ),
                                   Expanded(
@@ -178,7 +185,7 @@ class HomeView extends StatelessWidget {
                                     child: Text(
                                       item.createdDate.toString(),
                                       style: TextStyle(
-                                          fontSize: displaySize.height * 0.02),
+                                          fontSize: displayHeight * 0.02),
                                     ),
                                   ),
                                   const SizedBox(
@@ -195,20 +202,7 @@ class HomeView extends StatelessWidget {
             );
           }
 
-          return const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                Text(
-                  'Loading...',
-                  style: TextStyle(
-                    fontSize: 20,
-                  ),
-                ),
-              ],
-            ),
-          );
+          return const LoadingView();
         },
       ),
       floatingActionButton: SizedBox(
@@ -230,9 +224,9 @@ class HomeView extends StatelessWidget {
 
                 if (!context.mounted) return;
 
-                if (groupName != null) {
+                if (groupName != null && groupName != '') {
                   context
-                      .read<CombinationItemDbBloc>()
+                      .read<CombinationGroupDbBloc>()
                       .add(CombinationGroupCreateEvent(groupName: groupName));
                 }
               },

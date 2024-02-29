@@ -1,20 +1,26 @@
 import 'package:combinators/services/bloc/account/account_bloc.dart';
 import 'package:combinators/services/bloc/app_info/app_info_bloc.dart';
-import 'package:combinators/services/bloc/crud/combination_item_crud_bloc.dart';
+import 'package:combinators/services/bloc/crud/combination/combination_bloc.dart';
+import 'package:combinators/services/bloc/crud/group/combination_group_bloc.dart';
 import 'package:combinators/services/bloc/dark_mode/dark_mode_bloc.dart';
-import 'package:combinators/services/bloc/home_view/home_view_bloc.dart';
 import 'package:combinators/services/bloc/route_controller/route_bloc.dart';
 import 'package:combinators/services/bloc/route_controller/route_event.dart';
 import 'package:combinators/services/bloc/route_controller/route_state.dart';
 import 'package:combinators/services/crud/combination_item_service.dart';
+import 'package:combinators/views/utils/display_size.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: kIsWeb
         ? HydratedStorage.webStorageDirectory
@@ -42,18 +48,25 @@ void main() async {
               BlocProvider<AccountBloc>(
                 create: (context) => AccountBloc(),
               ),
-              BlocProvider<HomeViewBloc>(
-                create: (context) => HomeViewBloc(),
-              ),
               BlocProvider<AppInfoBloc>(
                 create: (context) => AppInfoBloc(),
               ),
             ],
             child: RepositoryProvider(
               create: (context) => CombinationItemRepository(),
-              child: BlocProvider(
-                create: (context) => CombinationItemDbBloc(
-                    context.read<CombinationItemRepository>(),),
+              child: MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => CombinationGroupDbBloc(
+                      context.read<CombinationItemRepository>(),
+                    ),
+                  ),
+                  BlocProvider(
+                    create: (context) => CombinationBloc(
+                      context.read<CombinationItemRepository>(),
+                    ),
+                  ),
+                ],
                 child: const HomePage(),
               ),
             ),
@@ -64,12 +77,44 @@ void main() async {
   ));
 }
 
-class HomePage extends StatelessWidget {
+// class HomePage extends StatelessWidget {
+//   const HomePage({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     context.read<RouteBloc>().add(const RouteHomeEvent());
+//     return BlocConsumer<RouteBloc, RouteState>(
+//         listener: (BuildContext context, RouteState state) {},
+//         builder: (context, state) {
+//           return state.view;
+//         });
+//   }
+// }
+
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
     context.read<RouteBloc>().add(const RouteHomeEvent());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    Size size = MediaQuery.of(context).size;
+    DisplaySize.instance.setDisplayHeight(size);
+    DisplaySize.instance.setDisplayWidth(size);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return BlocConsumer<RouteBloc, RouteState>(
         listener: (BuildContext context, RouteState state) {},
         builder: (context, state) {

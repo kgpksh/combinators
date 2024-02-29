@@ -10,10 +10,10 @@ Future<T?> showGenericDialog<T>({
   required DialogOptionBuilder optionBuilder,
 }) {
   final options = optionBuilder();
-  final controller = TextEditingController(text: defaultText);
   return showDialog<T>(
       context: context,
       builder: (context) {
+        final controller = TextEditingController(text: defaultText);
         return AlertDialog(
           title: Text(title),
           content: TextFormField(
@@ -22,7 +22,7 @@ Future<T?> showGenericDialog<T>({
             decoration: InputDecoration(
               hintText: hintText,
             ),
-            maxLength: 15,
+            maxLength: 10,
           ),
           actions: options.keys.map((optionTitle) {
             final T value = options[optionTitle];
