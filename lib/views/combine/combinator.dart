@@ -23,15 +23,20 @@ class CombinationPage extends StatefulWidget {
 }
 
 class _CombinationPageState extends State<CombinationPage> {
-  late double height;
-  late double width;
+  double width = DisplaySize.instance.displayWidth;
+  double floatingButtonSize = DisplaySize.instance.displayWidth * 0.13;
+  double cardFontSize = DisplaySize.instance.displayWidth * 0.037;
+  double categoryWidth = DisplaySize.instance.displayWidth * 0.35;
+  double itemFontSize = DisplaySize.instance.displayHeight * 0.03;
+  double randomButtonMinimumHeight = DisplaySize.instance.displayHeight * 0.1;
+  double randomButtonMinimumWidth = DisplaySize.instance.displayHeight * 0.4;
+  double itemCardHeight = DisplaySize.instance.displayHeight * 0.08;
+  double marginBetweenCategoryAndItem = DisplaySize.instance.displayHeight * 0.01;
   late List<DatabaseCategory> combinationDatas;
 
   @override
   void initState() {
     super.initState();
-    height = DisplaySize.instance.displayHeight;
-    width = DisplaySize.instance.displayWidth;
     context
         .read<CombinationBloc>()
         .add(CombinationPageLoadEvent(groupId: widget.groupId));
@@ -76,50 +81,54 @@ class _CombinationPageState extends State<CombinationPage> {
                             ),
                           ),
                           minimumSize: MaterialStateProperty.all<Size>(Size(
-                            width * 0.4,
-                            height * 0.1,
+                            randomButtonMinimumWidth,
+                            randomButtonMinimumHeight,
                           )),
                         ),
                         child: Text(
                           'Random combination',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: width * 0.04,
+                            fontSize: itemFontSize,
                           ),
                         ),
                       ),
-                      Center(
-                        child: FloatingActionButton(
-                          onPressed: () async {
-                            final categoryName = await showGenericDialog(
-                              context: context,
-                              title: 'Add Category',
-                              defaultText: '',
-                              hintText: 'Enter Category Name',
-                              optionBuilder: () => {
-                                'Cancel': null,
-                                'Create': true,
-                              },
-                            );
+                      SizedBox(
+                        width: floatingButtonSize,
+                        height: floatingButtonSize,
+                        child: FittedBox(
+                          child: FloatingActionButton(
+                            onPressed: () async {
+                              final categoryName = await showGenericDialog(
+                                context: context,
+                                title: 'Add Category',
+                                defaultText: '',
+                                hintText: 'Enter Category Name',
+                                optionBuilder: () => {
+                                  'Cancel': null,
+                                  'Create': true,
+                                },
+                              );
 
-                            if (!context.mounted) return;
+                              if (!context.mounted) return;
 
-                            if (categoryName != null && categoryName != '') {
-                              context.read<CombinationBloc>().add(
-                                    CombinationCategoryCreateEvent(
-                                      groupId: widget.groupId,
-                                      name: categoryName,
-                                    ),
-                                  );
-                            }
-                          },
-                          child: const Icon(Icons.add),
+                              if (categoryName != null && categoryName != '') {
+                                context.read<CombinationBloc>().add(
+                                      CombinationCategoryCreateEvent(
+                                        groupId: widget.groupId,
+                                        name: categoryName,
+                                      ),
+                                    );
+                              }
+                            },
+                            child: const Icon(Icons.add),
+                          ),
                         ),
                       )
                     ],
                   ),
-                  const SizedBox(
-                    height: 30,
+                  SizedBox(
+                    height: marginBetweenCategoryAndItem,
                   ),
                   Expanded(
                     child: CachedReorderableListView(
@@ -127,7 +136,7 @@ class _CombinationPageState extends State<CombinationPage> {
                       list: combinationDatas,
                       itemBuilder: (context, item) {
                         return SizedBox(
-                          width: width * 0.35,
+                          width: categoryWidth,
                           key: Key('${item.orderKey}'),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -138,6 +147,7 @@ class _CombinationPageState extends State<CombinationPage> {
                                 Expanded(
                                   flex: 1,
                                   child: Card(
+                                    semanticContainer: true,
                                     color: Colors.redAccent,
                                     margin: EdgeInsets.zero,
                                     child: Padding(
@@ -151,17 +161,17 @@ class _CombinationPageState extends State<CombinationPage> {
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                 color: Colors.black,
-                                                fontSize: width * 0.037,
+                                                fontSize: cardFontSize,
                                               ),
                                             ),
                                           ),
                                           Expanded(
                                             flex: 2,
                                             child: showCategoryPopupMenuButtons(
-                                                context: context,
-                                                item: item,
-                                                combinationDatas:
-                                                    combinationDatas),
+                                              context: context,
+                                              item: item,
+                                              combinationDatas:
+                                                  combinationDatas),
                                           ),
                                         ],
                                       ),
@@ -175,7 +185,7 @@ class _CombinationPageState extends State<CombinationPage> {
                                     itemBuilder:
                                         (BuildContext context, int index) {
                                       return SizedBox(
-                                        height: height * 0.08,
+                                        height: itemCardHeight,
                                         child: Card(
                                           color: Colors.greenAccent,
                                           child: Row(
@@ -186,7 +196,8 @@ class _CombinationPageState extends State<CombinationPage> {
                                                   child: Text(
                                                     item.items[index].name,
                                                     textAlign: TextAlign.center,
-                                                    style: const TextStyle(
+                                                    style: TextStyle(
+                                                      fontSize: cardFontSize,
                                                       color: Colors.black,
                                                     ),
                                                   ),

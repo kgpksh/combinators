@@ -2,9 +2,7 @@ import 'package:combinators/services/bloc/combination_result/combination_result_
 import 'package:combinators/services/crud/entity/category_entity.dart';
 import 'package:combinators/views/utils/display_size.dart';
 import 'package:combinators/views/utils/loading_view.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PopupCombination extends StatefulWidget {
@@ -17,6 +15,7 @@ class PopupCombination extends StatefulWidget {
 }
 
 class _PopupCombinationState extends State<PopupCombination> {
+  double titleFontSize = DisplaySize.instance.displayHeight * 0.04;
   double cardHeight = DisplaySize.instance.displayHeight * 0.089;
   double singleItemPadding = DisplaySize.instance.displayWidth * 0.01;
   double singleListHeight = DisplaySize.instance.displayHeight * 0.12;
@@ -53,7 +52,12 @@ class _PopupCombinationState extends State<PopupCombination> {
                     Icons.arrow_back,
                     size: DisplaySize.instance.displayWidth * 0.1,
                   )),
-              const Text('Combination'),
+              Text(
+                'Combination',
+                style: TextStyle(
+                  fontSize: titleFontSize,
+                ),
+              ),
               IconButton(
                 onPressed: () => {
                   context.read<CombinationResultBloc>().add(
@@ -63,6 +67,7 @@ class _PopupCombinationState extends State<PopupCombination> {
                       )
                 },
                 icon: Icon(
+                  color: Colors.black,
                   Icons.refresh_rounded,
                   size: DisplaySize.instance.displayWidth * 0.1,
                 ),
@@ -71,7 +76,7 @@ class _PopupCombinationState extends State<PopupCombination> {
           ),
         ),
       ),
-      content: Container(
+      content: SizedBox(
         width: double.maxFinite,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -93,7 +98,7 @@ class _PopupCombinationState extends State<PopupCombination> {
                           children: [
                             Expanded(
                               flex: 5,
-                              child: Container(
+                              child: SizedBox(
                                 height: cardHeight,
                                 child: Card(
                                   semanticContainer: true,
@@ -122,7 +127,7 @@ class _PopupCombinationState extends State<PopupCombination> {
                             Expanded(
                               flex: 5,
                               // 각나닫라맘바삿아잦차
-                              child: Container(
+                              child: SizedBox(
                                 height: cardHeight,
                                 child: Card(
                                   semanticContainer: true,

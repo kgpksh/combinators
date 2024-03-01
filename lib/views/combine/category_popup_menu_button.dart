@@ -2,6 +2,7 @@ import 'package:combinators/enums/menu_action.dart';
 import 'package:combinators/services/bloc/crud/combination/combination_bloc.dart';
 import 'package:combinators/services/crud/entity/category_entity.dart';
 import 'package:combinators/views/utils/confirm_dialog.dart';
+import 'package:combinators/views/utils/display_size.dart';
 import 'package:combinators/views/utils/text_edit_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,7 +12,16 @@ PopupMenuButton<CategoryItemMenuActions> showCategoryPopupMenuButtons({
   required DatabaseCategory item,
   required List<DatabaseCategory> combinationDatas,
 }) {
+  double popupMenuSize = DisplaySize.instance.displayHeight * 0.03;
+  double itemHeight = DisplaySize.instance.displayHeight * 0.06;
+  double itemWidth = DisplaySize.instance.displayWidth * 0.13;
+  double fontSize = DisplaySize.instance.displayWidth * 0.03;
   return PopupMenuButton<CategoryItemMenuActions>(
+    icon: Icon(
+      Icons.more_vert,
+      size: popupMenuSize,
+    ),
+    iconColor: Colors.black,
     onSelected: (value) async {
       switch (value) {
         case CategoryItemMenuActions.addItem:
@@ -85,17 +95,47 @@ PopupMenuButton<CategoryItemMenuActions> showCategoryPopupMenuButtons({
     },
     itemBuilder: (context) {
       return [
-        const PopupMenuItem<CategoryItemMenuActions>(
+        PopupMenuItem<CategoryItemMenuActions>(
           value: CategoryItemMenuActions.addItem,
-          child: Text('Add item'),
+          child: SizedBox(
+            height: itemHeight,
+            width: itemWidth,
+            child: Center(
+              child: Text(
+                textAlign: TextAlign.left,
+                'Add item',
+                style: TextStyle(fontSize: fontSize),
+              ),
+            ),
+          ),
         ),
-        const PopupMenuItem<CategoryItemMenuActions>(
+        PopupMenuItem<CategoryItemMenuActions>(
           value: CategoryItemMenuActions.editCategoryName,
-          child: Text('Rename Category'),
+          child: SizedBox(
+            height: itemHeight,
+            width: itemWidth,
+            child: Center(
+              child: Text(
+                textAlign: TextAlign.left,
+                'Rename Category',
+                style: TextStyle(fontSize: fontSize),
+              ),
+            ),
+          ),
         ),
-        const PopupMenuItem<CategoryItemMenuActions>(
+        PopupMenuItem<CategoryItemMenuActions>(
           value: CategoryItemMenuActions.deleteCategory,
-          child: Text('Delete Category'),
+          child: SizedBox(
+            height: itemHeight,
+            width: itemWidth,
+            child: Center(
+              child: Text(
+                textAlign: TextAlign.left,
+                'Delete Category',
+                style: TextStyle(fontSize: fontSize),
+              ),
+            ),
+          ),
         ),
       ];
     },
