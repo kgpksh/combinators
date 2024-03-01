@@ -1,11 +1,10 @@
-import 'package:combinators/enums/menu_action.dart';
 import 'package:combinators/services/bloc/crud/combination/combination_bloc.dart';
 import 'package:combinators/services/crud/entity/category_entity.dart';
 import 'package:combinators/views/combine/app_bar.dart';
 import 'package:combinators/views/combine/category_popup_menu_button.dart';
+import 'package:combinators/views/combine/cobination_result_popup.dart';
 import 'package:combinators/views/combine/item_popup_menu_button.dart';
 import 'package:combinators/views/utils/cached_reorderable_list_view.dart';
-import 'package:combinators/views/utils/confirm_dialog.dart';
 import 'package:combinators/views/utils/display_size.dart';
 import 'package:combinators/views/utils/loading_view.dart';
 import 'package:combinators/views/utils/text_edit_dialog.dart';
@@ -47,7 +46,7 @@ class _CombinationPageState extends State<CombinationPage> {
       body: BlocBuilder<CombinationBloc, CombinationState>(
         buildWhen: (context, state) => state is CombinationPageLoadedState,
         builder: (context, state) {
-          if(state is CombinationDbInitialState) {
+          if (state is CombinationDbInitialState) {
             return const LoadingView();
           }
           if (state is CombinationPageLoadedState) {
@@ -60,7 +59,12 @@ class _CombinationPageState extends State<CombinationPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          popupCombinationResult(
+                            context: context,
+                            categoryList: combinationDatas,
+                          );
+                        },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
                             Colors.blueAccent,

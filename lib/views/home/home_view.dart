@@ -1,4 +1,5 @@
 import 'package:combinators/services/bloc/app_info/app_info_bloc.dart';
+import 'package:combinators/services/bloc/combination_result/combination_result_bloc.dart';
 import 'package:combinators/services/bloc/crud/combination/combination_bloc.dart';
 import 'package:combinators/services/bloc/crud/group/combination_group_bloc.dart';
 import 'package:combinators/services/bloc/dark_mode/dark_mode_bloc.dart';
@@ -153,6 +154,9 @@ class HomeView extends StatelessWidget {
                                       ),
                                       BlocProvider<CombinationBloc>.value(
                                         value: BlocProvider.of<CombinationBloc>(context),
+                                      ),
+                                      BlocProvider<CombinationResultBloc>(
+                                        create: (context) => CombinationResultBloc(),
                                       ),
                                     ],
                                     child: CombinationPage(
