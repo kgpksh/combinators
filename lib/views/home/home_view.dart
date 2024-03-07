@@ -3,6 +3,7 @@ import 'package:combinators/services/bloc/combination_result/combination_result_
 import 'package:combinators/services/bloc/crud/combination/combination_bloc.dart';
 import 'package:combinators/services/bloc/crud/group/combination_group_bloc.dart';
 import 'package:combinators/services/bloc/dark_mode/dark_mode_bloc.dart';
+import 'package:combinators/services/bloc/time_management/time_management_cubit.dart';
 import 'package:combinators/services/crud/entity/group_entity.dart';
 import 'package:combinators/views/combine/combinator.dart';
 import 'package:combinators/views/utils/cached_reorderable_list_view.dart';
@@ -157,6 +158,12 @@ class HomeView extends StatelessWidget {
                                       ),
                                       BlocProvider<CombinationResultBloc>(
                                         create: (context) => CombinationResultBloc(),
+                                      ),
+                                      BlocProvider<AccountBloc>(
+                                        create: (context) => AccountBloc(),
+                                      ),
+                                      BlocProvider<TimeManagementCubit>(
+                                        create: (context) => TimeManagementCubit(),
                                       ),
                                     ],
                                     child: CombinationPage(
