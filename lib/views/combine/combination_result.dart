@@ -25,7 +25,7 @@ class PopupCombination extends StatefulWidget {
 }
 
 class _PopupCombinationState extends State<PopupCombination> {
-  double titleFontSize = DisplaySize.instance.displayHeight * 0.04;
+  double titleFontSize = DisplaySize.instance.displayHeight * 0.03;
   double cardHeight = DisplaySize.instance.displayHeight * 0.089;
   double singleItemPadding = DisplaySize.instance.displayWidth * 0.01;
   double singleListHeight = DisplaySize.instance.displayHeight * 0.12;

@@ -14,7 +14,7 @@ PopupMenuButton<ItemMenuActions> showItemPopupMenuButton({
 }) {
   double popupMenuSize = DisplaySize.instance.displayHeight * 0.03;
   double itemHeight = DisplaySize.instance.displayHeight * 0.06;
-  double itemWidth = DisplaySize.instance.displayWidth * 0.12;
+  double itemWidth = DisplaySize.instance.displayWidth * 0.15;
   double fontSize = DisplaySize.instance.displayWidth * 0.03;
   return PopupMenuButton<ItemMenuActions>(
     icon: Icon(
