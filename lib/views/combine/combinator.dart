@@ -72,10 +72,6 @@ class _CombinationPageState extends State<CombinationPage> {
       body: BlocListener<AccountBloc, AccountState>(
         listener: (context, state) {
           isSubscribing = state.isSubscribing;
-          if (!state.isSubscribing) {
-            InterstitialAdService().loadInterstitialAd();
-            RewardedAdService().loadRewardedAd();
-          }
         },
         child: BlocBuilder<CombinationBloc, CombinationState>(
           buildWhen: (context, state) => state is CombinationPageLoadedState,
@@ -85,6 +81,10 @@ class _CombinationPageState extends State<CombinationPage> {
             }
             if (state is CombinationPageLoadedState) {
               combinationDatas = List.of(state.combinationData);
+              if (!isSubscribing && combinationDatas.isNotEmpty) {
+                InterstitialAdService().loadInterstitialAd();
+                RewardedAdService().loadRewardedAd();
+              }
               return Padding(
                 padding: EdgeInsets.all(width * 0.03),
                 child: Column(
