@@ -30,14 +30,11 @@ class HomeView extends StatelessWidget {
       appBar: AppBar(
         title: const Text('All groups'),
       ),
-      drawer: BlocConsumer<AccountBloc, AccountState>(
-        listener: (context, state) {},
-        builder: (context, state) {
-          return Drawer(
-            child: ListView(
-              children: <Widget>[
-                BlocBuilder<AppInfoBloc, AppInfoState>(
-                    builder: (context, state) {
+      drawer: Drawer(
+        child: ListView(
+          children: <Widget>[
+            BlocBuilder<AppInfoBloc, AppInfoState>(
+                builder: (context, state) {
                   return Container(
                     margin: const EdgeInsets.all(20.0),
                     child: Text(
@@ -47,61 +44,63 @@ class HomeView extends StatelessWidget {
                     ),
                   );
                 }),
-                Visibility(
-                  visible: !state.isSubscribing,
-                  child: const ListTile(
-                    leading: Icon(Icons.do_disturb_on_outlined),
-                    title: Text('Subscribe and remove Ads'),
-                  ),
-                ),
-                Visibility(
-                  visible: state.isSubscribing,
-                  child: const ColoredBox(
+            BlocBuilder<AccountBloc, AccountState>(
+              builder: (context, state) {
+                if(state is AccountSubscribed) {
+                  return const ColoredBox(
                     color: Colors.green,
                     child: ListTile(
                       leading: Icon(Icons.check),
                       title: Text('You are SUBSCRIBING'),
                     ),
-                  ),
-                ),
-                ListTile(
-                    title: const Text('Open Source Licenses'),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const OssLicensesListPage()));
-                    }),
-                const Divider(),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    mainAxisSize: MainAxisSize.max,
-                    children: <Widget>[
-                      const Text('Dark Mode'),
-                      BlocBuilder<DarkModeBloc, bool>(
-                        builder: (context, state) {
-                          return Switch(
-                              value: state,
-                              onChanged: (value) {
-                                context.read<DarkModeBloc>().add(
-                                    ChangeDarkModeEvent(isDarkMode: value));
-                              });
-                        },
-                      )
-                    ],
-                  ),
-                ),
-                BlocBuilder<AppInfoBloc, AppInfoState>(
+                  );
+                }
+
+                return ListTile(
+                  leading: const Icon(Icons.do_disturb_on_outlined),
+                  title: const Text('Subscribe and remove Ads'),
+                  onTap: (){
+                    context.read<AccountBloc>().add(SubscriptionEvent());
+                  },
+                );
+              },
+            ),
+            ListTile(
+                title: const Text('Open Source Licenses'),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                          const OssLicensesListPage()));
+                }),
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  const Text('Dark Mode'),
+                  BlocBuilder<DarkModeBloc, bool>(
                     builder: (context, state) {
+                      return Switch(
+                          value: state,
+                          onChanged: (value) {
+                            context.read<DarkModeBloc>().add(
+                                ChangeDarkModeEvent(isDarkMode: value));
+                          });
+                    },
+                  )
+                ],
+              ),
+            ),
+            BlocBuilder<AppInfoBloc, AppInfoState>(
+                builder: (context, state) {
                   return Text('Version : ${state.appVersion}');
                 }),
-              ],
-            ),
-          );
-        },
+          ],
+        ),
       ),
       body: BlocBuilder<CombinationGroupDbBloc, CombinationGroupDbState>(
         builder: (context, state) {
@@ -159,8 +158,8 @@ class HomeView extends StatelessWidget {
                                       BlocProvider<CombinationResultBloc>(
                                         create: (context) => CombinationResultBloc(),
                                       ),
-                                      BlocProvider<AccountBloc>(
-                                        create: (context) => AccountBloc(),
+                                      BlocProvider<AccountBloc>.value(
+                                        value: BlocProvider.of<AccountBloc>(context),
                                       ),
                                       BlocProvider<TimeManagementCubit>(
                                         create: (context) => TimeManagementCubit(),

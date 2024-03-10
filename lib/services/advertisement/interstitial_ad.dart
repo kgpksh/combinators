@@ -19,14 +19,6 @@ class InterstitialAdService {
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
-          ad.fullScreenContentCallback = FullScreenContentCallback(
-            onAdDismissedFullScreenContent: (ad) {
-              ad.dispose();
-              _interstitialAd = null;
-              loadInterstitialAd();
-            },
-          );
-
           _interstitialAd = ad;
         },
         onAdFailedToLoad: (err) async {
@@ -44,11 +36,17 @@ class InterstitialAdService {
 
   void showInterstitialAd() {
     loadCount = maxLoadTry;
+    _interstitialAd?.fullScreenContentCallback = FullScreenContentCallback(
+      onAdDismissedFullScreenContent: (ad) {
+        ad.dispose();
+        _interstitialAd = null;
+        loadInterstitialAd();
+      },
+    );
+    _interstitialAd?.show();
     if(_interstitialAd == null) {
       loadInterstitialAd();
     }
-    _interstitialAd?.show();
-
   }
 
   void disposeInterstitialAd() {

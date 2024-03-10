@@ -16,6 +16,9 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'services/advertisement/interstitial_ad.dart';
+import 'services/advertisement/rewarded_ad.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
@@ -79,20 +82,6 @@ void main() async {
   ));
 }
 
-// class HomePage extends StatelessWidget {
-//   const HomePage({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     context.read<RouteBloc>().add(const RouteHomeEvent());
-//     return BlocConsumer<RouteBloc, RouteState>(
-//         listener: (BuildContext context, RouteState state) {},
-//         builder: (context, state) {
-//           return state.view;
-//         });
-//   }
-// }
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -104,7 +93,15 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    context.read<AccountBloc>().add(CheckAccountEvent());
     context.read<RouteBloc>().add(const RouteHomeEvent());
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    InterstitialAdService().disposeInterstitialAd();
+    RewardedAdService().disposeRewardedAd();
   }
 
   @override
@@ -117,10 +114,25 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<RouteBloc, RouteState>(
-        listener: (BuildContext context, RouteState state) {},
-        builder: (context, state) {
-          return state.view;
-        });
+    return BlocConsumer<AccountBloc, AccountState>(listener: (context, state) {
+      if (state is! AccountSubscribed) {
+        InterstitialAdService().loadInterstitialAd();
+        RewardedAdService().loadRewardedAd();
+      } else {
+        InterstitialAdService().disposeInterstitialAd();
+        RewardedAdService().disposeRewardedAd();
+      }
+    }, builder: (context, state) {
+      if (state is! AccountSubscribed) {
+        InterstitialAdService().loadInterstitialAd();
+        RewardedAdService().loadRewardedAd();
+      } else {
+        InterstitialAdService().disposeInterstitialAd();
+        RewardedAdService().disposeRewardedAd();
+      }
+      return BlocBuilder<RouteBloc, RouteState>(builder: (context, state) {
+        return state.view;
+      });
+    });
   }
 }

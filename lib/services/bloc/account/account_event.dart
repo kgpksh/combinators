@@ -4,3 +4,4 @@ part of 'account_bloc.dart';
 abstract class AccountEvent {}
 
 class CheckAccountEvent extends AccountEvent{}
+class SubscriptionEvent extends AccountEvent{}

@@ -45,7 +45,6 @@ class _PopupCombinationState extends State<PopupCombination> {
 
   @override
   Widget build(BuildContext context) {
-    context.read<AccountBloc>().add(CheckAccountEvent());
     return AlertDialog(
       contentPadding: EdgeInsets.zero,
       titlePadding: EdgeInsets.zero,

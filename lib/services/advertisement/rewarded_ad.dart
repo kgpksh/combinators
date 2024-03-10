@@ -21,14 +21,6 @@ class RewardedAdService {
       request: const AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (ad) {
-          ad.fullScreenContentCallback = FullScreenContentCallback(
-            onAdDismissedFullScreenContent: (ad) {
-              ad.dispose();
-              _rewardedAd = null;
-              loadRewardedAd();
-            },
-          );
-
           _rewardedAd = ad;
         },
         onAdFailedToLoad: (err) async {
@@ -45,10 +37,18 @@ class RewardedAdService {
 
   void showRewardedAd() {
     loadCount = maxLoadTry;
+    _rewardedAd?.fullScreenContentCallback = FullScreenContentCallback(
+      onAdDismissedFullScreenContent: (ad) {
+        ad.dispose();
+        _rewardedAd = null;
+        loadRewardedAd();
+      },
+    );
+    _rewardedAd?.show(onUserEarnedReward: (_, RewardItem reward) {  });
+
     if(_rewardedAd == null) {
       loadRewardedAd();
     }
-    _rewardedAd?.show(onUserEarnedReward: (_, RewardItem reward) {  });
   }
 
   void disposeRewardedAd() {

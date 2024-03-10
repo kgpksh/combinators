@@ -1,18 +1,10 @@
 part of 'account_bloc.dart';
 
 @immutable
-abstract class AccountState {
-  final bool isLoading;
-  final String loadingText;
-  final bool isSubscribing;
+abstract class AccountState {}
 
-  const AccountState({
-    this.isLoading = false,
-    this.loadingText = 'Please wait a moment',
-    this.isSubscribing = false,
-  });
-}
+class AccountInitial extends AccountState {}
 
-class AccountInitial extends AccountState {
-  const AccountInitial();
-}
+class AccountSubscribed extends AccountState{}
+
+class AccountNonSubscribed extends AccountState {}
