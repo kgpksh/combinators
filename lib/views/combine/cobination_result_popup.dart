@@ -229,7 +229,6 @@ Future<void> popupCombinationResult({
                                     ),
                                     Expanded(
                                       flex: 5,
-                                      // 각나닫라맘바삿아잦차
                                       child: SizedBox(
                                         height: cardHeight,
                                         child: Card(
@@ -243,6 +242,7 @@ Future<void> popupCombinationResult({
                                                   ? Text(
                                                       result[index].last,
                                                       style: TextStyle(
+                                                        color: Colors.black,
                                                         fontSize: itemFontSize,
                                                       ),
                                                       textAlign:

@@ -93,7 +93,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    context.read<AccountBloc>().add(CheckAccountEvent());
+    context.read<AccountBloc>().add(InitAccountEvent());
     context.read<RouteBloc>().add(const RouteHomeEvent());
   }
 
