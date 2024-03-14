@@ -147,6 +147,7 @@ class HomeView extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
+                                  settings: const RouteSettings(name: '/combinationView'),
                                   builder: (_) => MultiBlocProvider(
                                     providers: [
                                       BlocProvider<CombinationGroupDbBloc>.value(

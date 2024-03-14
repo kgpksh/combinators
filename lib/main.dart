@@ -1,3 +1,4 @@
+import 'package:combinators/firebase_options.dart';
 import 'package:combinators/services/bloc/account/account_bloc.dart';
 import 'package:combinators/services/bloc/app_info/app_info_bloc.dart';
 import 'package:combinators/services/bloc/crud/combination/combination_bloc.dart';
@@ -8,6 +9,9 @@ import 'package:combinators/services/bloc/route_controller/route_event.dart';
 import 'package:combinators/services/bloc/route_controller/route_state.dart';
 import 'package:combinators/services/crud/combination_item_service.dart';
 import 'package:combinators/views/utils/display_size.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +25,15 @@ import 'services/advertisement/rewarded_ad.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  FlutterError.onError = (flutterErrorDetails) =>
+      FirebaseCrashlytics.instance.recordFlutterFatalError(flutterErrorDetails);
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
   MobileAds.instance.initialize();
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -31,6 +44,9 @@ void main() async {
         ? HydratedStorage.webStorageDirectory
         : await getApplicationDocumentsDirectory(),
   );
+  final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  final FirebaseAnalyticsObserver observer =
+      FirebaseAnalyticsObserver(analytics: analytics);
 
   runApp(BlocProvider(
     create: (context) => DarkModeBloc(),
@@ -43,6 +59,7 @@ void main() async {
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
             useMaterial3: true,
           ),
+          navigatorObservers: [observer],
           darkTheme: ThemeData.dark(),
           themeMode: state ? ThemeMode.dark : ThemeMode.light,
           home: MultiBlocProvider(
