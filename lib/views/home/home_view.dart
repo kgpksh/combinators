@@ -6,6 +6,7 @@ import 'package:combinators/services/bloc/dark_mode/dark_mode_bloc.dart';
 import 'package:combinators/services/bloc/time_management/time_management_cubit.dart';
 import 'package:combinators/services/crud/entity/group_entity.dart';
 import 'package:combinators/views/combine/combinator.dart';
+import 'package:combinators/views/home/drawers/about_this_app.dart';
 import 'package:combinators/views/utils/cached_reorderable_list_view.dart';
 import 'package:combinators/views/home/drawers/open_source_license_list_view.dart';
 import 'package:combinators/views/utils/display_size.dart';
@@ -65,16 +66,6 @@ class HomeView extends StatelessWidget {
                 );
               },
             ),
-            ListTile(
-                title: const Text('Open Source Licenses'),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                          const OssLicensesListPage()));
-                }),
-            const Divider(),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
@@ -95,9 +86,22 @@ class HomeView extends StatelessWidget {
                 ],
               ),
             ),
+            const Divider(),
+            ListTile(
+                title: const Text('About this app'),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                          const AboutThisAppPage()));
+                }),
             BlocBuilder<AppInfoBloc, AppInfoState>(
                 builder: (context, state) {
-                  return Text('Version : ${state.appVersion}');
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                    child: Text('Version : ${state.appVersion}'),
+                  );
                 }),
           ],
         ),

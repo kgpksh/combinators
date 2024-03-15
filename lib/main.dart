@@ -19,10 +19,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'services/advertisement/interstitial_ad.dart';
 import 'services/advertisement/rewarded_ad.dart';
 
+late final SharedPreferences isFirstRunPref;
+late bool? isFirstRun;
+const String isFirstRunKey = 'isFirstRun';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -34,11 +38,16 @@ void main() async {
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true;
   };
+
+  isFirstRunPref = await SharedPreferences.getInstance();
+  isFirstRun = isFirstRunPref.getBool(isFirstRunKey);
+
   MobileAds.instance.initialize();
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: kIsWeb
         ? HydratedStorage.webStorageDirectory
@@ -112,6 +121,32 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     context.read<AccountBloc>().add(InitAccountEvent());
     context.read<RouteBloc>().add(const RouteHomeEvent());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (isFirstRun == null || isFirstRun == true) {
+        showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              icon: const Icon(Icons.notifications_active),
+              title: const Text('Welcome!'),
+              content: const Text(
+                  'Notice: Some of the data you create while using this app, such as Groups, Categories, and Items, will be stored on your device and may be deleted when you uninstall the app.'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Confirm'),
+                  onPressed: () async{
+                    await isFirstRunPref.setBool(isFirstRunKey, false);
+                    Navigator.of(context).pop(); // Dialog 닫기
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    });
   }
 
   @override
