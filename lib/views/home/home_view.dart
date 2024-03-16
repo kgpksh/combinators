@@ -8,7 +8,6 @@ import 'package:combinators/services/crud/entity/group_entity.dart';
 import 'package:combinators/views/combine/combinator.dart';
 import 'package:combinators/views/home/drawers/about_this_app.dart';
 import 'package:combinators/views/utils/cached_reorderable_list_view.dart';
-import 'package:combinators/views/home/drawers/open_source_license_list_view.dart';
 import 'package:combinators/views/utils/display_size.dart';
 import 'package:combinators/views/utils/loading_view.dart';
 import 'package:combinators/views/utils/text_edit_dialog.dart';
@@ -45,27 +44,27 @@ class HomeView extends StatelessWidget {
                     ),
                   );
                 }),
-            BlocBuilder<AccountBloc, AccountState>(
-              builder: (context, state) {
-                if(state is AccountSubscribed) {
-                  return const ColoredBox(
-                    color: Colors.green,
-                    child: ListTile(
-                      leading: Icon(Icons.check),
-                      title: Text('You are SUBSCRIBING'),
-                    ),
-                  );
-                }
-
-                return ListTile(
-                  leading: const Icon(Icons.do_disturb_on_outlined),
-                  title: const Text('Subscribe and remove Ads'),
-                  onTap: (){
-                    context.read<AccountBloc>().add(SubscriptionEvent());
-                  },
-                );
-              },
-            ),
+            // BlocBuilder<AccountBloc, AccountState>(
+            //   builder: (context, state) {
+            //     if(state is AccountSubscribed) {
+            //       return const ColoredBox(
+            //         color: Colors.green,
+            //         child: ListTile(
+            //           leading: Icon(Icons.check),
+            //           title: Text('You are SUBSCRIBING'),
+            //         ),
+            //       );
+            //     }
+            //
+            //     return ListTile(
+            //       leading: const Icon(Icons.do_disturb_on_outlined),
+            //       title: const Text('Subscribe and remove Ads'),
+            //       onTap: (){
+            //         context.read<AccountBloc>().add(SubscriptionEvent());
+            //       },
+            //     );
+            //   },
+            // ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
@@ -86,7 +85,7 @@ class HomeView extends StatelessWidget {
                 ],
               ),
             ),
-            const Divider(),
+            // const Divider(),
             ListTile(
                 title: const Text('About this app'),
                 onTap: () {
