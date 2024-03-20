@@ -12,16 +12,17 @@ const String subscriptionId = 'subscription1';
 class AccountBloc extends Bloc<AccountEvent, AccountState> {
   late final InAppPurchase _iap;
   bool available = false;
-  List<PurchaseDetails> _purchases = [];
+  final List<PurchaseDetails> _purchases = [];
   List<ProductDetails> _products = [];
   StreamSubscription<List<PurchaseDetails>>? _subscription;
   Set<String> ids = {subscriptionId};
   AccountBloc() : super(AccountInitial()) {
     on<InitAccountEvent>((event, emit) async {
-      await _initialize();
+      // await _initialize();
     });
     on<CheckAccountEvent>((event, emit) {
-      _checkSubscriptionStatus();
+      // _checkSubscriptionStatus();
+      emit(AccountNonSubscribed());
     });
 
     on<SubscriptionEvent>((event, emit) async {
@@ -69,12 +70,10 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
         return;
       }
 
-      final ProductDetails product = _products.firstWhere((product) => product.id == subscriptionId, orElse: null);
-      if(product != null) {
-        final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
-        _iap.buyNonConsumable(purchaseParam: purchaseParam);
-      }
-      return;
+      final ProductDetails product = _products.firstWhere((product) => product.id == subscriptionId, orElse: () => null as ProductDetails);
+      final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
+      _iap.buyNonConsumable(purchaseParam: purchaseParam);
+          return;
     }
   }
 
@@ -82,6 +81,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     final ProductDetailsResponse response =
     await _iap.queryProductDetails(ids);
     _products = response.productDetails;
+    return null;
   }
 
   void _checkSubscriptionStatus() {

@@ -14,6 +14,10 @@ class InterstitialAdService {
   InterstitialAd? _interstitialAd;
 
   void loadInterstitialAd() async {
+    if(_interstitialAd != null) {
+      return;
+    }
+
     await InterstitialAd.load(
       adUnitId: AdHelper.interstitialAdUnitId,
       request: const AdRequest(),

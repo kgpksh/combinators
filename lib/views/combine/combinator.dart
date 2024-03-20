@@ -1,7 +1,5 @@
 import 'package:combinators/services/advertisement/interstitial_ad.dart';
-import 'package:combinators/services/advertisement/rewarded_ad.dart';
 import 'package:combinators/services/bloc/account/account_bloc.dart';
-import 'package:combinators/services/bloc/combination_result/combination_result_bloc.dart';
 import 'package:combinators/services/bloc/crud/combination/combination_bloc.dart';
 import 'package:combinators/services/bloc/time_management/time_management_cubit.dart';
 import 'package:combinators/services/crud/entity/category_entity.dart';
@@ -13,7 +11,6 @@ import 'package:combinators/views/utils/cached_reorderable_list_view.dart';
 import 'package:combinators/views/utils/display_size.dart';
 import 'package:combinators/views/utils/loading_view.dart';
 import 'package:combinators/views/utils/text_edit_dialog.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

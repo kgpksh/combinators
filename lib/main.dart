@@ -166,15 +166,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AccountBloc, AccountState>(listener: (context, state) {
-      if (state is! AccountSubscribed) {
-        InterstitialAdService().loadInterstitialAd();
-        RewardedAdService().loadRewardedAd();
-      } else {
-        InterstitialAdService().disposeInterstitialAd();
-        RewardedAdService().disposeRewardedAd();
-      }
-    }, builder: (context, state) {
+    return BlocBuilder<AccountBloc, AccountState>(
+      builder: (context, state) {
       if (state is! AccountSubscribed) {
         InterstitialAdService().loadInterstitialAd();
         RewardedAdService().loadRewardedAd();

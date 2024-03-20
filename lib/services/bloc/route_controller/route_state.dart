@@ -1,5 +1,4 @@
 import 'package:combinators/views/home/home_view.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 @immutable

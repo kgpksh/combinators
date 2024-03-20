@@ -160,7 +160,7 @@ Future<void> popupCombinationResult({
                                             style: TextStyle(
                                                 fontSize: DisplaySize
                                                         .instance.displayWidth *
-                                                    0.03),
+                                                    0.023),
                                           ),
                                         ),
                                       )

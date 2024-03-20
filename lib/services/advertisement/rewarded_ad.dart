@@ -16,6 +16,10 @@ class RewardedAdService {
   RewardedAd? _rewardedAd;
 
   void loadRewardedAd() async {
+    if(_rewardedAd != null) {
+      return;
+    }
+
     await RewardedAd.load(
       adUnitId: AdHelper.rewardedAdUnitId,
       request: const AdRequest(),
