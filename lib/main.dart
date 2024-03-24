@@ -169,7 +169,9 @@ class _HomePageState extends State<HomePage> {
     return BlocBuilder<AccountBloc, AccountState>(
       builder: (context, state) {
       if (state is! AccountSubscribed) {
-        InterstitialAdService().loadInterstitialAd();
+        if(isFirstRun == false) {
+          InterstitialAdService().loadInterstitialAd();
+        }
         RewardedAdService().loadRewardedAd();
       } else {
         InterstitialAdService().disposeInterstitialAd();

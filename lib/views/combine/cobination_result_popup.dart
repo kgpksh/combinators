@@ -126,7 +126,7 @@ Future<void> popupCombinationResult({
                                   child: Column(
                                     children: [
                                       Expanded(
-                                        flex: 9,
+                                        flex: 7,
                                         child: IconButton(
                                           onPressed: () {
                                             if (!isSubscribing) {
@@ -159,8 +159,8 @@ Future<void> popupCombinationResult({
                                             '${state.currentRerollCount}/$maxRerollCount left',
                                             style: TextStyle(
                                                 fontSize: DisplaySize
-                                                        .instance.displayWidth *
-                                                    0.023),
+                                                        .instance.displayHeight *
+                                                    0.015),
                                           ),
                                         ),
                                       )
