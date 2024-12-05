@@ -1,16 +1,12 @@
-# combinators
+# Combinators
 
-A new Flutter project.
+## 1. 개요
+어떤 것을 선택해야 할 지 고민이 많은 사람들을 위해 대신 선택해주는 자신만의 선택 도우미를 목표로
+만들었습니다.
 
-## Getting Started
+## 2. 기술스택
+Flutter, Dart, Bloc, Sqlite, Firebase Analytics, Admob
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 3.
+1. Sqlite에 카테고리와 아이템들을 저장 하도록 하였습니다.
+2. 1시간에 30번 무작위 조합을 다시 얻을 수 있습니다. 횟수를 소모 하였다면 광고로 다시 충전 가능합니다.
